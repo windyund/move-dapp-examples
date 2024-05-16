@@ -69,6 +69,12 @@ module lottery::lottery {
     const ELotteryStatusNotValid: u64 = 4;
     const EClaimNotRight: u64 = 5;
 
+    public struct CreateLotteryEvent has drop, copy {
+        name: String,
+        sender: address,
+        lottery_id: ID,
+    }
+
 
     // 构造函数，单例
     fun init(otw: LOTTERY, ctx: &mut TxContext) {
@@ -104,6 +110,7 @@ module lottery::lottery {
             winner_claimed: false,
             fee_ratio: feeRatio
         };
+        event::emit(CreateLotteryEvent{ name: lottery.name, sender: tx_context::sender(ctx),lottery_id: object::uid_to_inner(&lottery.id)});
         share_object(lottery);
     }
 
