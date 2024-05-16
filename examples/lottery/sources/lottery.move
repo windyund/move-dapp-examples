@@ -1,15 +1,17 @@
-/// Module: lottery
 module lottery::lottery {
     use std::debug;
     use std::vector;
     use std::option;
     use std::option::{Option, some};
+    use std::string;
+    use std::string::String;
     use std::vector::{ push_back};
     use sui::address;
     use sui::balance::{Self, Balance, zero};
     use sui::bcs;
     use sui::clock::{Self,Clock, timestamp_ms};
     use sui::coin::{Self, Coin, value};
+    use sui::event;
     use sui::hash::blake2b256;
     use sui::object;
     use sui::object::{UID, ID};
@@ -23,6 +25,8 @@ module lottery::lottery {
 
    public struct Lottery has key,store {
         id:UID,
+        name: String,              //名称
+        // round: u64,                //轮数
         reward_pool: Balance<SUI>, //奖励池
         publisher: address,        //发布者
         price: u64,                //彩票价格,MIST，即最小单位
@@ -63,7 +67,7 @@ module lottery::lottery {
     const EAmountNotEnough:u64 = 2;
     const ELotteryNotEnd:u64 = 3;
     const ELotteryStatusNotValid: u64 = 4;
-    const EClaimNotRight: u64 = 4;
+    const EClaimNotRight: u64 = 5;
 
 
     // 构造函数，单例
@@ -75,16 +79,23 @@ module lottery::lottery {
         public_transfer(publisher, sender);
     }
 
+    #[test_only]
+    public fun create_admin_for_testing(ctx: &mut TxContext) {
+        let adminCap = AdminCap { id: object::new(ctx) };
+        public_transfer(adminCap, tx_context::sender(ctx));
+    }
+
     // 创建彩票,仅发布者可调
     public entry fun create_lottory(_: &AdminCap, price: u64, duration: u64, feeRatio:u64, clock: &Clock, ctx: &mut TxContext) {
         let current_time =timestamp_ms(clock);
         let lottery = Lottery{
             id: object::new(ctx),
+            name: string::utf8(b"福利彩票"),
             reward_pool: zero<SUI>(),
             publisher: tx_context::sender(ctx),
             price,
             start_time: current_time,
-            end_time: current_time+ duration,
+            end_time: current_time + duration,
             status: ACTIVE,
             ticket_num: 0,
             player_num: 0,
@@ -191,10 +202,22 @@ module lottery::lottery {
     }
 
 
-    //管理员提现收益
+    //管理员提现收益 todo 管理可提取所有
     public entry fun withdraw(_: &AdminCap, lottery: &mut Lottery, ctx: &mut TxContext) {
         let pool_val = balance::value(&lottery.reward_pool);
         let leftCoin = coin::take(&mut lottery.reward_pool, pool_val, ctx);
         public_transfer(leftCoin, tx_context::sender(ctx));
     }
+
+    public fun price(lottery:&Lottery) : u64{
+         lottery.price
+    }
+    public fun winnerTicket(lottery:&Lottery) : Option<u64>{
+        lottery.winner_ticket
+    }
+
+    public fun feeRatio(lottery:&Lottery) : u64{
+        lottery.fee_ratio
+    }
+
 }

@@ -5,8 +5,8 @@ edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
 # authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet", override = true}
-#Sui = { local = "/Users/wenba/code/sui/crates/sui-framework/packages/sui-framework",override = true}
+#Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet", override = true}
+Sui = { local = "/Users/wenba/code/sui/crates/sui-framework/packages/sui-framework",override = true}
 oracle = { git = "https://github.com/MystenLabs/apps", subdir = "weather-oracle", rev = "db04fbd17d6ba91ade45c32f609b949fb47d209b"}
 
 # For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
