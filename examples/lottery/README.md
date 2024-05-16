@@ -12,6 +12,7 @@
 3.前端页面
 ```
 
+## 如何获取Weather Oracle对象 object id?
 
 # 发布合约
 ```shell

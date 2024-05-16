@@ -69,6 +69,7 @@ module lottery::lottery {
     const ELotteryStatusNotValid: u64 = 4;
     const EClaimNotRight: u64 = 5;
 
+    // --------------- Events ---------------
     public struct CreateLotteryEvent has drop, copy {
         name: String,
         sender: address,
